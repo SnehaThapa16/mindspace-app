@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Bot, User } from 'lucide-react';
 import './ChatBot.css';
-import { GoogleGenAI } from '@google/genai';
 
 const ChatBot = ({ onBack, userType }) => {
   const [messages, setMessages] = useState([]);
@@ -11,11 +10,6 @@ const ChatBot = ({ onBack, userType }) => {
   const messagesEndRef = useRef(null);
 
   const storageKey = `chatMessages_${userType}`;
-
-  // Initialize Gemini client
-  const ai = new GoogleGenAI({
-    apiKey: 'AIzaSyCW9KJOXN78VLUdQEeSf4rzE2iNhufj6n0',
-  });
 
   const getUserType = () => {
     const session = JSON.parse(localStorage.getItem('userSession') || '{}');
@@ -40,14 +34,10 @@ const ChatBot = ({ onBack, userType }) => {
   }, [storageKey]);
 
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  // Gemini AI response function
+  // Call Netlify function to get AI response
   const getAIResponse = async (message) => {
     setIsLoading(true);
 
@@ -57,19 +47,15 @@ const ChatBot = ({ onBack, userType }) => {
         content: msg.text,
       }));
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: message,
-        messages: conversationHistory,
+      const res = await fetch('/.netlify/functions/chat', {
+        method: 'POST',
+        body: JSON.stringify({ message, history: conversationHistory }),
       });
 
-      if (response.text) {
-        return response.text;
-      }
-
-      throw new Error('No response text received');
+      const data = await res.json();
+      return data.response || null;
     } catch (error) {
-      console.error('Gemini API Error:', error);
+      console.error('Error fetching AI response:', error);
       return null;
     } finally {
       setIsLoading(false);
@@ -142,9 +128,7 @@ const ChatBot = ({ onBack, userType }) => {
 
     try {
       let aiResponse = await getAIResponse(inputMessage);
-      if (!aiResponse) {
-        aiResponse = getFallbackResponse(inputMessage);
-      }
+      if (!aiResponse) aiResponse = getFallbackResponse(inputMessage);
 
       const botResponse = {
         id: Date.now() + 1,
