@@ -1,29 +1,28 @@
-// netlify/functions/chat.js
-import { TextServiceClient } from '@google/genai';
+import { Handler } from '@netlify/functions';
+import { GoogleGenAI } from '@google/genai';
 
-const client = new TextServiceClient({
-  apiKey: process.env.GOOGLE_API_KEY, // Set in Netlify env vars
-});
-
-export async function handler(event) {
+const handler: Handler = async (event, context) => {
   try {
-    const { message, history } = JSON.parse(event.body);
+    const body = JSON.parse(event.body || '{}');
+    const userMessage = body.message;
 
-    const response = await client.generateText({
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GOOGLE_API_KEY, // use env variable
+    });
+
+    const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      prompt: message,
-      messages: history,
+      contents: userMessage,
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ response: response.text }),
+      body: JSON.stringify({ reply: response.text || 'No reply from AI' }),
     };
-  } catch (error) {
-    console.error('Netlify function error:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
+  } catch (err) {
+    console.error(err);
+    return { statusCode: 500, body: JSON.stringify({ error: 'AI failed' }) };
   }
-}
+};
+
+export { handler };
