@@ -138,7 +138,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
           <form onSubmit={handleLogin} className="auth-form">
             <div className="form-group">
               <div className="input-wrapper">
-                <Mail className="input-icon " size={20}  />
+                <Mail className="input-icon" size={20} />
                 <input
                   type="email"
                   name="email"
@@ -147,6 +147,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
                   onChange={handleInputChange}
                   required
                   className="auth-input"
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -161,7 +162,8 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
                   value={formData.password}
                   onChange={handleInputChange}
                   required
-                  className="auth-input "
+                  className="auth-input"
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -194,6 +196,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
                   onChange={handleInputChange}
                   required
                   className="auth-input"
+                  autoComplete="name"
                 />
               </div>
             </div>
@@ -209,6 +212,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
                   onChange={handleInputChange}
                   required
                   className="auth-input"
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -224,6 +228,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
                   onChange={handleInputChange}
                   required
                   className="auth-input"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -246,6 +251,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
                   onChange={handleInputChange}
                   required
                   className="auth-input"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
