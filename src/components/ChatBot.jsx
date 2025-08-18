@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Send, Bot, User } from 'lucide-react';
 import './ChatBot.css';
 
@@ -53,7 +54,7 @@ const ChatBot = ({ onBack, userType }) => {
       });
 
       const data = await res.json();
-      return data.response || null;
+      return data.reply || null;
     } catch (error) {
       console.error('Error fetching AI response:', error);
       return null;
@@ -197,7 +198,9 @@ const ChatBot = ({ onBack, userType }) => {
               {message.sender === 'bot' ? <Bot size={20} /> : <User size={20} />}
             </div>
             <div className="message-content">
-              <div className="message-text">{message.text}</div>
+              <div className="message-text">
+                <ReactMarkdown>{message.text}</ReactMarkdown>
+              </div>
               <div className="message-time">
                 {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
